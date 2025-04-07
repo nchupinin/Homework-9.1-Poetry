@@ -27,8 +27,8 @@ def main():
     list_data_key_state = filter_by_state(list_data)
     print("Список 'EXECUTED':", list_data_key_state)
 
-    list_sort_data = sort_by_date(list_data)
-    print("Cписок, отсортированный по дате:", list_sort_data)
+    # list_sort_data = sort_by_date(list_data)
+    # print("Cписок, отсортированный по дате:", list_sort_data)
 
 
 if __name__ == "__main__":

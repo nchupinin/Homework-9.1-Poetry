@@ -9,8 +9,8 @@ def  filter_by_state(list_data: list) -> list:
     return new_list
 
 
-def sort_by_date(list_data: list) -> list:
-    '''Возвращает новый список, отсортированный по дате'''
+# def sort_by_date(list_data: list) -> list:
+#     '''Возвращает новый список, отсортированный по дате'''
 
 
 
