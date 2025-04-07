@@ -14,7 +14,7 @@ def main():
 
     data_number = "2024-03-11T02:26:18.671407"
     data = get_date(data_number)
-    print("Дата банковской операции со счетом.",data)
+    print("Дата банковской операции со счетом:",data)
 
 if __name__ == "__main__":
     main()
