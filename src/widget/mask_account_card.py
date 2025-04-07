@@ -18,4 +18,4 @@ def get_date(date: str) -> str:
     """возвращает строку с датой в формате ДД.ММ.ГГГГ (11.03.2024)."""
 
     result = f"{date[8:10]}.{date[5:7]}.{date[0:4]}"
-    return (result)
+    return result
