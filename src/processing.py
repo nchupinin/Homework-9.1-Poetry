@@ -1,6 +1,4 @@
 from datetime import datetime
-from typing import Dict, List
-
 
 def filter_by_state(list_data: list) -> list:
     """Возвращает список словарей, где state == 'EXECUTED'."""
