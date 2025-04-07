@@ -12,3 +12,10 @@ def get_mask_account(account_number: str) -> str:
     if len(account_number) < 4 or not account_number.isdigit():
         raise ValueError("Номер счета должен содержать минимум 4 цифры")
     return f"**{account_number[-4:]}"
+
+
+def get_date(date: str) -> str:
+    """возвращает строку с датой в формате ДД.ММ.ГГГГ (11.03.2024)."""
+
+    result = f"{date[8:10]}.{date[5:7]}.{date[0:4]}"
+    return (result)
