@@ -2,7 +2,7 @@ from src.masks.card import get_mask_account, get_mask_card_number
 
 
 def main():
-    """Возвращает маскированный номер карты и маску счета """
+    """Возвращает маскированный номер карты и маску счета"""
 
     card_number = "7080792289066543"
     masked_card = get_mask_card_number(card_number)
