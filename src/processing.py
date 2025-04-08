@@ -1,12 +1,12 @@
 from datetime import datetime
 
-def filter_by_state(list_data: list) -> list:
+def filter_by_state(list_data: list, state: str = "EXECUTED") -> list:
     """Возвращает список словарей, где state == 'EXECUTED'."""
 
     new_list = []
     for sublist in list_data:
         for item in sublist:
-            if item.get("state") == "EXECUTED":
+            if item.get("state") == state:
                 new_list.append(item.copy())
     return new_list
 
