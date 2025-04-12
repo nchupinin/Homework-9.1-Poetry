@@ -1,4 +1,4 @@
-from src.processing import filter_by_state, sort_by_date
+from src.processing import filter_by_state, sort_by_date, function
 from src.widget.mask_account_card import get_date, get_mask_account, get_mask_card_number
 
 
@@ -30,6 +30,9 @@ def main():
 
     list_sort_data = sort_by_date(list_data)
     print("Cписок, отсортированный по убыванию (новые → старые):", list_sort_data)
+
+    x = 2
+    print(function(x))
 
 
 if __name__ == "__main__":
