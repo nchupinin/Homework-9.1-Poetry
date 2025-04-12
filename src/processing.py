@@ -17,3 +17,8 @@ def sort_by_date(list_data: list[dict], reverse: bool = True) -> list[dict]:
 
     flat_list = [item for sublist in list_data for item in sublist]
     return sorted(flat_list, key=lambda x: datetime.fromisoformat(x["date"]), reverse=reverse)
+
+
+def function(x: int) -> int:
+    result = x + 2
+    return result
