@@ -1,8 +1,8 @@
 from typing import Any, Dict, List
 
 from src.processing import filter_by_state, sort_by_date
-from src.masks import get_mask_card_number
-from src.widget import get_date, get_mask_account
+from src.masks import get_mask_card_number, get_mask_account
+from src.widget import get_date, mask_account_card
 
 
 def main() -> None:
@@ -38,6 +38,10 @@ def main() -> None:
     for transaction in sorted_transactions:
         print(f"{transaction['date']} - {transaction['id']}")
 
+    print()
+    print(mask_account_card('Счет 12345678901234567890'))   #Счет **7890
+    print(mask_account_card('Visa 1234567890123456'), end="\n")  #Visa 1234 56** **** 3456
+    print()
 
 if __name__ == "__main__":
     main()

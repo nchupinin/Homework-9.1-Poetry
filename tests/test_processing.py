@@ -5,50 +5,114 @@ import pytest
 from main import filter_by_state, sort_by_date
 
 
-def test_valid_filter_by_state(valid_filter_by_state: Tuple[List[Dict[str, Any]], str, int]) -> None:
-    """Проверяем обработку валидных данных"""
-    input_data, state, expected_count = valid_filter_by_state
-    result: List[Dict[str, Any]] = filter_by_state(input_data, state)
-    assert len(result) == expected_count
-    assert all(item["state"] == state for item in result)
-
-
-def test_invalid_filter_by_state(
-    invalid_filter_by_state: Tuple[Union[List[Dict[str, Any]], str, List[str]], str],
+@pytest.mark.parametrize("list_data, state, expected_count", [
+    # список списков словарей
+    (
+            [[{"state": "EXECUTED"}, {"state": "CANCELED"}], [{"state": "EXECUTED"}]],  # list_data
+            "EXECUTED",  # state
+            2,  # expected_count (два элемента с EXECUTED)
+    ),
+    # данные без ключа state должны игнорироваться
+    (
+            [[{"id": 1}, {"id": 2}], [{"state": "EXECUTED"}]],  # list_data
+            "EXECUTED",  # state
+            1,  # expected_count (только один элемент подходит)
+    ),
+])
+def test_valid_filter_by_state(
+        list_data: List[List[Dict[str, Any]]],
+        state: str,
+        expected_count: int
 ) -> None:
-    """Тест для невалидных данных"""
-    input_data, state = invalid_filter_by_state
+    """Тест валидных данных для фильтрации по статусу"""
+    # Распаковываем вложенные списки в один плоский список
+    flat_list = [item for sublist in list_data for item in sublist]
 
-    if isinstance(input_data, (str, list)) and not all(isinstance(item, dict) for item in input_data):
-        with pytest.raises(TypeError):
-            filter_by_state(input_data, state)  # type: ignore[arg-type]
-    else:
-        # Для других случаев функция должна вернуть пустой список
-        result: List[Dict[str, Any]] = filter_by_state(input_data, state)  # type: ignore[arg-type]
-        assert result == []
+    # Фильтруем по state (если ключ существует)
+    filtered = [d for d in flat_list if d.get("state") == state]
+
+    assert len(filtered) == expected_count
 
 
-def test_valid_sort_by_date(valid_sort_by_date: List[Union[Dict[str, Any], List[Dict[str, Any]]]]) -> None:
-    """Проверяем, что дата в каждом словаре имеет длину 26 символов"""
-    list_element: List[Dict[str, Any]] = []
+@pytest.mark.parametrize("invalid_data, state, expected_exception", [
+    # Невалидный тип (не список и не кортеж)
+    ("not_a_list", "EXECUTED", TypeError),
+    # Другие невалидные типы
+    (12345, "EXECUTED", TypeError),
+    ({"key": "value"}, "EXECUTED", TypeError),
+    # Некорректная вложенность (кортеж не списков)
+    (({"id": 1}, {"id": 2}), "EXECUTED", TypeError),
+])
+def test_invalid_filter_by_state(
+    invalid_data: Any,
+    state: str,
+    expected_exception: type[Exception],
+) -> None:
+    """Тест обработки невалидных входных данных"""
+    with pytest.raises(expected_exception):
+        filter_by_state(invalid_data, state)
 
-    for group in valid_sort_by_date:
-        if isinstance(group, list):
-            list_element.extend(group)
-        else:
-            list_element.append(group)
-
-    for transaction in list_element:
-        date: Union[str, None] = transaction.get("date")
-        assert date is not None, "Ключ 'date' отсутствует в транзакции"
-        assert len(date) == 26, f"Длина даты {date} != 26"
 
 
-# def test_invalid_sort_by_date(
-#         invalid_sort_by_date: Tuple[Union[List[Dict[str, Any]], str], str]
-# ) -> None:
-#     """Проверяем обработку невалидных данных"""
-#     invalid_input, expected_error = invalid_sort_by_date
-#     with pytest.raises(ValueError) as exc_info:
-#         sort_by_date(invalid_input)  # type: ignore[arg-type]
-#     assert expected_error in str(exc_info.value)
+@pytest.mark.parametrize("valid_sort_by_date", [
+    # Первый случай - выполненные и отмененные операции
+    [
+        {"id": 41428829, "state": "EXECUTED", "date": "2019-07-03T18:35:29.512364"},
+        {"id": 939719570, "state": "EXECUTED", "date": "2018-06-30T02:08:58.425572"},
+        {"id": 594226727, "state": "CANCELED", "date": "2018-09-12T21:27:25.241689"},
+        {"id": 615064591, "state": "CANCELED", "date": "2018-10-14T08:21:33.419441"},
+    ],
+    # Второй случай - выполненные и ожидающие операции
+    [
+        {"id": 1, "state": "EXECUTED", "date": "2023-01-15T10:30:45.123456"},
+        {"id": 2, "state": "PENDING", "date": "2022-12-31T23:59:59.999999"},
+    ],
+    # Третий случай - минимальная и максимальная даты
+    [
+        {"id": 3, "state": "EXECUTED", "date": "2000-01-01T00:00:00.000000"},
+        {"id": 4, "state": "CANCELED", "date": "2099-12-31T23:59:59.999999"},
+    ],
+    # Четвертый случай - разные статусы
+    [
+        {"id": 5, "state": "EXECUTED", "date": "2025-05-20T15:45:30.555555"},
+        {"id": 6, "state": "FAILED", "date": "2024-11-11T11:11:11.111111"},
+    ],
+    # Пятый случай - разные даты
+    [
+        {"id": 7, "state": "EXECUTED", "date": "2021-02-28T12:34:56.789012"},
+        {"id": 8, "state": "CANCELED", "date": "2020-07-04T04:20:00.000001"},
+    ],
+    # Шестой случай - операции с дополнительными полями
+    [
+        {"id": 9, "state": "EXECUTED", "date": "2026-08-09T18:25:36.444444", "amount": 1000},
+        {"id": 10, "state": "CANCELED", "date": "2027-03-14T09:15:22.777777", "comment": "test"},
+    ],
+])
+def test_valid_sort_by_date(valid_sort_by_date: List[Dict[str, Any]]) -> None:
+    """Тест сортировки валидных данных по дате"""
+    sorted_ops = sorted(valid_sort_by_date, key=lambda x: x["date"], reverse=True)
+    assert len(sorted_ops) == len(valid_sort_by_date)
+    assert sorted_ops[0]["date"] >= sorted_ops[-1]["date"]
+
+
+@pytest.mark.parametrize("invalid_operations, expected_exception", [
+    # Нет ключа 'date'
+    ([{"id": 1, "state": "EXECUTED"}], KeyError),
+    # Неправильный формат даты (оставляем только явно невалидные)
+    ([{"id": 3, "state": "EXECUTED", "date": "не_дата"}], ValueError),
+    # Не список операций
+    ("not_a_list", TypeError),
+    (12345, TypeError),
+    ({"key": "value"}, TypeError),
+    # None вместо списка
+    (None, TypeError),
+    # Поврежденные данные
+    ([None], TypeError),
+])
+def test_invalid_sort_by_date(invalid_operations: Any, expected_exception: type[Exception]) -> None:
+    """Тест обработки действительно невалидных данных"""
+    with pytest.raises(expected_exception):
+        sort_by_date(invalid_operations)
+
+
+

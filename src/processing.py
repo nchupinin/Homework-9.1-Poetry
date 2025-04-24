@@ -6,12 +6,8 @@ def filter_by_state(
     list_data: Union[List[Dict[str, Any]], Tuple[List[Dict[str, Any]], ...], List[List[Dict[str, Any]]]],
     state: str = "EXECUTED",
 ) -> List[Dict[str, Any]]:
-    """
-    Фильтрует операции по статусу.
-    Поддерживает:
-    - Плоский список: [op1, op2]
-    - Кортеж списков: ([op1, op2], [op3])
-    - Список списков: [[op1, op2], [op3]]
+    """Фильтрует операции по статусу.Поддерживает:
+    Плоский список: [op1, op2], Кортеж списков: ([op1, op2], [op3]),Список списков: [[op1, op2], [op3]]
     """
     result: List[Dict[str, Any]] = []
 
