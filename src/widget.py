@@ -23,7 +23,7 @@ def get_date(date: str) -> str:
         raise ValueError("Входные данные должны содержать 26 символов")
 
         # Проверка формата даты (YYYY-MM-DDTHH:MM:SS.ffffff)
-    if len(date) < 10 or date[4] != '-' or date[7] != '-':
+    if len(date) < 10 or date[4] != "-" or date[7] != "-":
         raise ValueError("Неправильный формат даты (должен быть YYYY-MM-DD...)")
 
         # Проверка месяца и дня
@@ -42,17 +42,16 @@ def get_date(date: str) -> str:
 
 
 def mask_account_card(info: str) -> str:
-    '''Маскирует номер счета или номер карты разными способами
-    в зависимости от того какие данные приходят на вход'''
+    """Маскирует номер счета или номер карты разными способами
+    в зависимости от того какие данные приходят на вход"""
 
     parts_numbers = info.split()
     number = parts_numbers[-1]
-    card_name = ' '.join(parts_numbers[:-1])
+    card_name = " ".join(parts_numbers[:-1])
 
-    if info.startswith('Счет'):
+    if info.startswith("Счет"):
         stealth_number = get_mask_account(number)
 
     else:
         stealth_number = get_mask_card_number(number)
     return f"{card_name} {stealth_number}"
-
